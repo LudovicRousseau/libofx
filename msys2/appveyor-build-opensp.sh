@@ -4,7 +4,7 @@ open_sp_version=1.5.2
 
 wget -O /OpenSP-$open_sp_version.tar.gz "https://sourceforge.net/projects/openjade/files/opensp/1.5.2/OpenSP-$open_sp_version.tar.gz/download"
 
-mpwd=`old`
+mpwd=`pwd`
 cd /
 tar xzvf OpenSP-$open_sp_version.tar.gz
 cd $mpwd
