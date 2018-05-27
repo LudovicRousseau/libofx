@@ -2,7 +2,9 @@
 
 open_sp_version=1.5.2
 
-wget -O /OpenSP-1.5.2.tar.gz "https://sourceforge.net/projects/openjade/files/opensp/1.5.2/OpenSP-1.5.2.tar.gz/download"
+wget -O /OpenSP-$open_sp_version.tar.gz "https://sourceforge.net/projects/openjade/files/opensp/1.5.2/OpenSP-$open_sp_version.tar.gz/download"
+cd /
+tar xzvf OpenSP-$open_sp_version.tar.gz
 
 cp opensp-$open_sp_version-msys2.patch.gz /OpenSP-$open_sp_version/
 cd /OpenSP-$open_sp_version
