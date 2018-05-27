@@ -17,6 +17,7 @@ install:
 build_script:
 - cmd: >-
     c:\msys64\usr\bin\bash -lc "cd /c/projects/libofx-src/msys2 && ./appveyor-build-opensp.sh"
+
     c:\msys64\usr\bin\bash -lc "cd /c/projects/libofx-src/msys2 && ./appveyor-build-ofx.sh"
 artifacts:
 - path: /libofx_MINGW32.zip
