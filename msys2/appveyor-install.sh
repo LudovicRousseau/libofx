@@ -9,4 +9,4 @@ else
 	i_pkg_postfix="w64-i686"
 fi
 
-pacman -S --noconfirm mingw-$i_pkg_postfix-patch
+pacman -S --noconfirm patch
