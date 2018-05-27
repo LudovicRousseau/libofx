@@ -182,7 +182,7 @@ AC_CHECK_HEADERS([ParserEventGeneratorKit.h SGMLApplication.h EventGenerator.h],
 				[ AC_MSG_ERROR([OpenSP includes not found]) ], 
 				[] )
 				
-OPENSPLIBS="-L$OPENSPLIBPATH -losp"
+OPENSPLIBS="-L$OPENSPLIBPATH/lib -L$OPENSPLIBPATH/bin -losp -lintl" 
 ac_save_LIBS="$LIBS"
 LIBS="$OPENSPLIBS $LIBS"
 
