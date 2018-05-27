@@ -20,7 +20,7 @@ build_script:
 
     c:\msys64\usr\bin\bash -lc "cd /c/projects/libofx-src/msys2 && ./appveyor-build-ofx.sh"
 artifacts:
-- path: /libofx_MINGW32.zip
+- path: c:\libofx_MINGW32.zip
   name: libofx 32-bit
-- path: /libofx_MINGW64.zip
+- path: c:\libofx_MINGW64.zip
   name: libofx 64-bit
