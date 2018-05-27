@@ -3,7 +3,7 @@
 source /appveyor.environment
 export MYSTEM
 
-cp gengetopt_$MSYSTEM.exe /usr/bin
+cp gengetopt_$MSYSTEM.exe /usr/bin/gengetopt.exe
 
 export PATH=$PATH:/inst/bin
 cd ..
