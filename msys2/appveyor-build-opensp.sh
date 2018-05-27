@@ -16,7 +16,3 @@ patch -s -p1 < opensp-1.5.2-msys2.patch
 ./autoinit.sh
 ./configure --prefix=/inst --disable-doc-build
 make && make install
-
-export PATH=$PATH:/inst-64/bin
-../libofx/configure --with-opensp-includes=/home/Karin/libofx/inst-64/include/OpenSP --with-opensp-libs=/home/Karin/libofx//inst-64/ --prefix=/home/Karin/libofx/inst-64 && make
-

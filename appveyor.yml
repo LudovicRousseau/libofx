@@ -18,3 +18,9 @@ build_script:
 - cmd: >-
     c:\msys64\usr\bin\bash -lc "cd /c/projects/libofx-src/msys2 && ./appveyor-build-opensp.sh"
     c:\msys64\usr\bin\bash -lc "cd /c/projects/libofx-src/msys2 && ./appveyor-build-ofx.sh"
+    c:\msys64\usr\bin\bash -lc "ls /mingw*/share/glib-2.0/schemas/gschema.dtd"
+artifacts:
+- path: /libofx_MINGW32.zip
+  name: libofx 32-bit
+- path: /libofx_MING64.zip
+  name: libofx 64-bit

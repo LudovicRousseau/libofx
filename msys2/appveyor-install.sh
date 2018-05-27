@@ -10,3 +10,4 @@ else
 fi
 
 pacman -S --noconfirm patch
+pacman -S --noconfirm zip
