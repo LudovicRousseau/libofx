@@ -11,8 +11,8 @@ cd $mpwd
 
 cp opensp-$open_sp_version-msys2.patch.gz /OpenSP-$open_sp_version/
 cd /OpenSP-$open_sp_version
-gunzip opensp-$open_sp_version-msys.patch.gz
-patch -s -p1 < opensp-1.5.2-msys.patch
+gunzip opensp-$open_sp_version-msys2.patch.gz
+patch -s -p1 < opensp-1.5.2-msys2.patch
 ./autoinit.sh
 ./configure --prefix=/inst --disable-doc-build
 make && make install
