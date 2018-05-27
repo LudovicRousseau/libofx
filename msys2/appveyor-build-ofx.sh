@@ -12,4 +12,4 @@ cd ..
 make -j 2
 make install
 
-zip -9r /c/libofx_$MSYSTEM.zip /inst
+zip -9r libofx_$MSYSTEM.zip /inst
