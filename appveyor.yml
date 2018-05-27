@@ -1,0 +1,23 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+clone_folder: c:\projects\libofx-src
+init:
+- cmd: >-
+    c:\msys64\usr\bin\bash -lc "echo MSYSTEM=%MSYSTEM% > /appveyor.environment"
+
+
+    c:\msys64\usr\bin\bash -lc "wget -O /OpenSP-1.5.2.tar.gz \"https://sourceforge.net/projects/openjade/files/opensp/1.5.2/OpenSP-1.5.2.tar.gz/download"
+
+    c:\msys64\usr\bin\bash -lc "cd / && tar xzvf OpenSP-1.5.2.tar.gz"
+environment:
+  matrix:
+  - MSYSTEM: MINGW32
+  - MSYSTEM: MINGW64
+install:
+- cmd: >-
+    c:\msys64\usr\bin\bash -lc "cd /c/projects/libofx-src/msys2 && ./appveyor-install.sh"
+
+build_script:
+- cmd: >-
+    c:\msys64\usr\bin\bash -lc "cd /c/projects/libofx-src/msys2 && ./appveyor-build-opensp.sh"
+    c:\msys64\usr\bin\bash -lc "cd /c/projects/libofx-src/msys2 && ./appveyor-build-ofx.sh"
