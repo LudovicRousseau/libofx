@@ -6,9 +6,6 @@ init:
     c:\msys64\usr\bin\bash -lc "echo MSYSTEM=%MSYSTEM% > /appveyor.environment"
 
 
-    c:\msys64\usr\bin\bash -lc "wget -O /OpenSP-1.5.2.tar.gz \"https://sourceforge.net/projects/openjade/files/opensp/1.5.2/OpenSP-1.5.2.tar.gz/download"
-
-    c:\msys64\usr\bin\bash -lc "cd / && tar xzvf OpenSP-1.5.2.tar.gz"
 environment:
   matrix:
   - MSYSTEM: MINGW32
