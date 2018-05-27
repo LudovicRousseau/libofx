@@ -24,3 +24,20 @@ artifacts:
   name: libofx 32-bit
 - path: libofx_MINGW64.zip
   name: libofx 64-bit
+deploy:
+- provider: GitHub
+  release: 1.5.2
+  auth_token:
+    secure: sZu+i3QuPeW93JlxEBOJ7E1WYsAZQtIsOHVjzftLxkBvBKX/9Akt4GRYUdQWK3/Z
+  artifact: libofx 32-bit
+  draft: true
+  on:
+    MSYSTEM: MINGW32
+- provider: GitHub
+  release: 1.5.2
+  auth_token:
+    secure: sZu+i3QuPeW93JlxEBOJ7E1WYsAZQtIsOHVjzftLxkBvBKX/9Akt4GRYUdQWK3/Z
+  artifact: libofx 64-bit
+  draft: true
+  on:
+    MSYSTEM: MINGW64
