@@ -19,5 +19,5 @@ patch -s -p1 < opensp-1.5.2-msys2.patch
 
 echo "Initialise..."
 ./autoinit.sh
-./configure --prefix=/inst --disable-doc-build
+./configure --prefix=/tmp/inst --disable-doc-build
 make -j 2 && make install
