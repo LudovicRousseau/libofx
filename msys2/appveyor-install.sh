@@ -11,3 +11,4 @@ fi
 
 pacman -S --noconfirm patch
 pacman -S --noconfirm zip
+pacman -S --noconfirm gengetopt
