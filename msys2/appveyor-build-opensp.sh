@@ -2,18 +2,19 @@
 
 open_sp_version=1.5.2
 
-wget -O /OpenSP-$open_sp_version.tar.gz "https://sourceforge.net/projects/openjade/files/opensp/1.5.2/OpenSP-$open_sp_version.tar.gz/download"
 
-mpwd=`pwd`
+wget -O /tmp/OpenSP-$open_sp_version.tar.gz "https://sourceforge.net/projects/openjade/files/opensp/1.5.2/OpenSP-$open_sp_version.tar.gz/download"
+
+opwd=`pwd`
 
 echo "Extracting..."
-cd /
+cd /tmp
 tar xzvf OpenSP-$open_sp_version.tar.gz > /dev/null
-cd $mpwd
+cd $opwd
 
 echo "Patching..."
-cp opensp-$open_sp_version-msys2.patch.gz /OpenSP-$open_sp_version/
-cd /OpenSP-$open_sp_version
+cp opensp-$open_sp_version-msys2.patch.gz /tmp/OpenSP-$open_sp_version/
+cd /tmp/OpenSP-$open_sp_version
 gunzip opensp-$open_sp_version-msys2.patch.gz
 patch -s -p1 < opensp-1.5.2-msys2.patch
 

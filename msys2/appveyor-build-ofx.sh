@@ -1,9 +1,10 @@
 #! /bin/sh
 
-source /appveyor.environment
-export MYSTEM
-
-cp gengetopt_$MSYSTEM.exe /usr/bin/gengetopt.exe
+app_env=/appveyor.environment
+if test -f $app_env; then
+	source /appveyor.environment
+	export MYSTEM
+fi
 
 export PATH=$PATH:/tmp/inst/bin
 cd ..
@@ -12,4 +13,6 @@ cd ..
 make -j 2
 make install
 
-zip -9r libofx_$MSYSTEM.zip /tmp/inst
+if test -f $app_env; then
+	zip -9r libofx_$MSYSTEM.zip /tmp/inst
+fi
