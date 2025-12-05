@@ -1,0 +1,72 @@
+name: Windows
+
+permissions:
+  contents: read
+  pull-requests: write
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            autoconf
+            automake
+            gettext-devel
+            intltool
+            libtool
+            make
+            patch
+            pkg-config
+            zip
+          pacboy: >-
+            gcc:p
+
+      - uses: actions/checkout@v4
+
+      - name: build OpenSP
+        run: |
+          open_sp_version=1.5.2
+
+          wget -O /tmp/OpenSP-$open_sp_version.tar.gz "https://sourceforge.net/projects/openjade/files/opensp/1.5.2/OpenSP-$open_sp_version.tar.gz/download"
+
+          echo "Extracting..."
+          pushd /tmp
+          tar xzvf OpenSP-$open_sp_version.tar.gz
+          popd
+
+          echo "Patching..."
+          cp msys2/opensp-$open_sp_version-msys2.patch /tmp/OpenSP-$open_sp_version/
+          cd /tmp/OpenSP-$open_sp_version
+          patch -p1 < opensp-$open_sp_version-msys2.patch
+
+          echo "Initialise..."
+          ./autoinit.sh
+          ./configure --prefix=/tmp/inst --disable-doc-build
+          make --jobs=4
+          make install
+
+      - name: compile
+        run: |
+          export PATH=$PATH:/tmp/inst/bin
+          autoupdate
+          ./autogen.sh
+          ./configure --with-opensp-includes=/tmp/inst/include/OpenSP --with-opensp-libs=/tmp/inst/lib --prefix=/tmp/inst
+          make --jobs=4
+          make install
+
+          zip -9r libofx.zip /tmp/inst
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: libofx.zip
