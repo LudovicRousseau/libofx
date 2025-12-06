@@ -1,0 +1,261 @@
+diff -ru OpenSP-1.5.2.orig/Makefile.am OpenSP-1.5.2/Makefile.am
+--- OpenSP-1.5.2.orig/Makefile.am	2005-12-23 15:14:27.000000000 +0100
++++ OpenSP-1.5.2/Makefile.am	2025-12-06 14:01:01.126044500 +0100
+@@ -4,7 +4,7 @@
+ 
+ SUBDIRS = pubtext unicode doc \
+ 	include generic \
+-	intl po \
++	po \
+ 	lib nsgmls spent spam sgmlnorm sx spcat \
+ 	tests @DOCSRC@
+ 
+diff -ru OpenSP-1.5.2.orig/configure.in OpenSP-1.5.2/configure.in
+--- OpenSP-1.5.2.orig/configure.in	2005-12-23 15:15:21.000000000 +0100
++++ OpenSP-1.5.2/configure.in	2025-12-06 13:58:57.458135900 +0100
+@@ -15,7 +15,7 @@
+ AC_CONFIG_SRCDIR([pubtext])
+ AM_INIT_AUTOMAKE(OpenSP, 1.5.2, no-define)
+ AM_MAINTAINER_MODE
+-AC_PREREQ(2.53)
++AC_PREREQ([2.72])
+ AM_CONFIG_HEADER(config.h)
+ AM_SANITY_CHECK
+ 
+@@ -225,6 +225,14 @@
+ AC_SUBST(SP_LIBOSP_REV, 0)
+ AC_SUBST(SP_LIBOSP_AGE, 0)
+ 
++
++AM_CONDITIONAL([WIN32_EXTRA], [uname | grep MING > /dev/null])
++
++is_mingw=0
++uname | grep MINGW > /dev/null
++if test $? = 0; then is_mingw=1; fi
++
++AC_DEFINE_UNQUOTED([IS_MINGW], $is_mingw, "Running MinGW or so")
+ dnl Check for programs.
+ AC_PROG_CC
+ AC_PROG_CPP
+@@ -234,11 +242,11 @@
+ AC_PROG_LN_S
+ AC_PROG_MAKE_SET
+ AC_PATH_PROGS(PERL, perl, perl)
+-AC_PROG_LIBTOOL
++LT_INIT
+ dnl Checks for libraries.
+ AC_CHECK_LIB(pthread,pthread_create,,AC_CHECK_LIB(threads,cthread_fork))
+ 
+-AM_GNU_GETTEXT
++AM_GNU_GETTEXT([external])
+ AM_GNU_GETTEXT_VERSION([0.14.5])
+ AC_CHECK_HEADERS(locale.h)
+ AC_DEFINE_DIR(SP_LOCALE_DIR, datadir/locale, [location of message catalogs])
+@@ -247,7 +255,15 @@
+ AC_SUBST(SP_MESSAGE_DOMAIN)
+ 
+ dnl Checks for header files.
+-AC_HEADER_STDC
++m4_warn([obsolete],
++[The preprocessor macro 'STDC_HEADERS' is obsolete.
++  Except in unusual embedded environments, you can safely include all
++  C89 headers unconditionally.])dnl
++# Autoupdate added the next two lines to ensure that your configure
++# script's behavior did not change.  They are probably safe to remove.
++AC_CHECK_INCLUDES_DEFAULT
++AC_PROG_EGREP
++
+ AC_CHECK_HEADERS(limits.h unistd.h io.h osfcn.h)
+ AC_LANG([C++])
+ AC_CHECK_HEADERS(new cassert)
+@@ -255,7 +271,7 @@
+ dnl Checks for typedefs, structures, and compiler characteristics.
+ AC_C_BIGENDIAN
+ AC_TYPE_SIZE_T
+-AC_DIAGNOSE([obsolete],[AC_DIAGNOSE([obsolete],[AC_STRUCT_ST_BLKSIZE:
++m4_warn([obsolete],[_au_m4_changequote([,])AC_DIAGNOSE([obsolete],[_au_m4_changequote([,])AC_STRUCT_ST_BLKSIZE:
+         your code should no longer depend upon `HAVE_ST_BLKSIZE', but
+         `HAVE_STRUCT_STAT_ST_BLKSIZE'.  Remove this warning and
+         the `AC_DEFINE' when you adjust the code.])
+@@ -274,9 +290,7 @@
+ 
+ AC_CACHE_CHECK(for sig_atomic_t in signal.h,
+     ac_cv_have_sig_atomic_t,
+-    AC_TRY_LINK([#include <signal.h>],sig_atomic_t x;,
+-	ac_cv_have_sig_atomic_t=yes,
+-	ac_cv_have_sig_atomic_t=no))
++    AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <signal.h>]], [[sig_atomic_t x;]])],[ac_cv_have_sig_atomic_t=yes],[ac_cv_have_sig_atomic_t=no]))
+ if test "$ac_cv_have_sig_atomic_t" = "no"
+ then
+     AC_CHECK_TYPE(sig_atomic_t,int)
+@@ -300,7 +314,7 @@
+ AC_CXX_EXPLICIT_INSTANTIATIONS
+ AC_CACHE_CHECK(for placement operator new,
+ ac_cv_cxx_placement_operator_new,
+-[AC_TRY_COMPILE([#include <stddef.h>
++[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stddef.h>
+ #ifdef HAVE_NEW
+ #include <new>
+ #else
+@@ -315,9 +329,7 @@
+   void *x;
+   A *bar = new (x) A;
+   return bar;
+-};],,
+-   ac_cv_cxx_placement_operator_new=yes,
+-   ac_cv_cxx_placement_operator_new=no)
++};]], [[]])],[ac_cv_cxx_placement_operator_new=yes],[ac_cv_cxx_placement_operator_new=no])
+ ])
+ if test "$ac_cv_cxx_placement_operator_new" = yes; then
+   AC_DEFINE(HAVE_PLACEMENT_OPERATOR_NEW,1,
+@@ -325,15 +337,13 @@
+ fi
+ AC_CACHE_CHECK(whether the C++ compiler supports the std namespace,
+ ac_cv_cxx_namespace_std,
+-[AC_TRY_COMPILE([
++[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+ #ifdef HAVE_NEW
+ #include <new>
+ #else
+ #include <new.h>
+-#endif],[
+-std::set_new_handler(0);],
+-   ac_cv_cxx_namespace_std=yes,
+-   ac_cv_cxx_namespace_std=no)
++#endif]], [[
++std::set_new_handler(0);]])],[ac_cv_cxx_namespace_std=yes],[ac_cv_cxx_namespace_std=no])
+ ])
+ if test "$ac_cv_cxx_namespace_std" = yes; then
+   AC_DEFINE(HAVE_NAMESPACE_STD,1,
+@@ -374,12 +384,10 @@
+               [define this if your system misses new.h])
+     AC_CACHE_CHECK(whether to declare set_new_handler extern "C",
+                     ac_cv_cxx_new_handler_extern_c,
+-                    [AC_TRY_LINK([
++                    [AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+ typedef void (*new_handler)();
+-new_handler set_new_handler(new_handler);],[
+-set_new_handler(0);],
+-                      ac_cv_cxx_new_handler_extern_c=no,
+-                      ac_cv_cxx_new_handler_extern_c=yes)
++new_handler set_new_handler(new_handler);]], [[
++set_new_handler(0);]])],[ac_cv_cxx_new_handler_extern_c=no],[ac_cv_cxx_new_handler_extern_c=yes])
+                      ])
+     if test "$ac_cv_cxx_new_handler_extern_c" = yes; then
+       AC_DEFINE(SP_SET_NEW_HANDLER_EXTERN_C,1,
+@@ -389,12 +397,10 @@
+ fi
+ AC_CACHE_CHECK(whether new_handler accepts size_t and returns int,
+ ac_cv_cxx_fancy_new_handler,
+-[AC_TRY_COMPILE([
++[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+ #include <stddef.h>
+ #include <new.h>
+-int oom(size_t) { }],[set_new_handler(oom);],
+-   ac_cv_cxx_fancy_new_handler=yes,
+-   ac_cv_cxx_fancy_new_handler=no)
++int oom(size_t) { }]], [[set_new_handler(oom);]])],[ac_cv_cxx_fancy_new_handler=yes],[ac_cv_cxx_fancy_new_handler=no])
+  ])
+ if test "$ac_cv_cxx_fancy_new_handler" = yes; then
+   AC_DEFINE(SP_FANCY_NEW_HANDLER,1,
+diff -ru OpenSP-1.5.2.orig/lib/Makefile.am OpenSP-1.5.2/lib/Makefile.am
+--- OpenSP-1.5.2.orig/lib/Makefile.am	2005-12-15 14:13:16.000000000 +0100
++++ OpenSP-1.5.2/lib/Makefile.am	2025-12-06 13:36:00.188713000 +0100
+@@ -78,6 +78,10 @@
+ 	UTF16CodingSystem.cxx Fixed4CodingSystem.cxx \
+ 	memcmp.c memmove.c strerror.c
+ 
++if WIN32_EXTRA
++libosp_la_SOURCES += Win32CodingSystem.cxx
++endif
++
+ INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/generic
+ 
+ ## We include the windows-only source and aux files here, so that
+diff -ru OpenSP-1.5.2.orig/lib/MessageReporter.cxx OpenSP-1.5.2/lib/MessageReporter.cxx
+--- OpenSP-1.5.2.orig/lib/MessageReporter.cxx	2005-07-21 16:05:17.000000000 +0200
++++ OpenSP-1.5.2/lib/MessageReporter.cxx	2025-12-06 13:36:00.235998000 +0100
+@@ -123,7 +123,7 @@
+     os() << ':';
+   }
+   if (options_ & messageNumbers)
+-    os() << (unsigned long)message.type->module() << "." 
++    os() << (int) (uintptr_t) message.type->module() << "." 
+       << (unsigned long)message.type->number() << ":";
+   switch (message.type->severity()) {
+   case MessageType::info:
+diff -ru OpenSP-1.5.2.orig/nsgmls/Makefile.am OpenSP-1.5.2/nsgmls/Makefile.am
+--- OpenSP-1.5.2.orig/nsgmls/Makefile.am	2005-12-15 14:13:16.000000000 +0100
++++ OpenSP-1.5.2/nsgmls/Makefile.am	2025-12-06 13:36:00.569673500 +0100
+@@ -10,7 +10,8 @@
+ 	RastEventHandlerMessages.msg RastEventHandlerMessages.rc \
+ 	nsgmls.rc nsgmls.dsp .cvsignore
+ 
+-onsgmls_LDADD = $(top_builddir)/lib/libosp.la $(LTLIBINTL)
++
++onsgmls_LDADD = $(top_builddir)/lib/libosp.la $(LTLIBINTL) $(top_builddir)/lib/Win32CodingSystem.lo
+ 
+ INCLUDES = -I$(top_srcdir)/include -I$(top_srcdir)/generic 
+ 
+diff -ru OpenSP-1.5.2.orig/po/Makefile.in.in OpenSP-1.5.2/po/Makefile.in.in
+--- OpenSP-1.5.2.orig/po/Makefile.in.in	2005-11-05 10:05:21.000000000 +0100
++++ OpenSP-1.5.2/po/Makefile.in.in	2025-12-06 13:36:00.614197800 +0100
+@@ -28,9 +28,9 @@
+ localedir = $(datadir)/locale
+ gettextsrcdir = $(datadir)/gettext/po
+ 
++MKINSTALLDIRS = @MKDIR_P@
+ INSTALL = @INSTALL@
+ INSTALL_DATA = @INSTALL_DATA@
+-MKINSTALLDIRS = @MKINSTALLDIRS@
+ mkinstalldirs = $(SHELL) $(MKINSTALLDIRS)
+ 
+ GMSGFMT = @GMSGFMT@
+@@ -169,13 +169,13 @@
+ 	fi
+ install-data-no: all
+ install-data-yes: all
+-	$(mkinstalldirs) $(DESTDIR)$(datadir)
++	mkdir -p $(DESTDIR)$(datadir)
+ 	@catalogs='$(CATALOGS)'; \
+ 	for cat in $$catalogs; do \
+ 	  cat=`basename $$cat`; \
+ 	  lang=`echo $$cat | sed -e 's/\.gmo$$//'`; \
+ 	  dir=$(localedir)/$$lang/LC_MESSAGES; \
+-	  $(mkinstalldirs) $(DESTDIR)$$dir; \
++	  mkdir -p $(DESTDIR)$$dir; \
+ 	  if test -r $$cat; then realcat=$$cat; else realcat=$(srcdir)/$$cat; fi; \
+ 	  $(INSTALL_DATA) $$realcat $(DESTDIR)$$dir/$(DOMAIN).mo; \
+ 	  echo "installing $$realcat as $(DESTDIR)$$dir/$(DOMAIN).mo"; \
+diff -ru OpenSP-1.5.2.orig/sx/XmlOutputEventHandler.cxx OpenSP-1.5.2/sx/XmlOutputEventHandler.cxx
+--- OpenSP-1.5.2.orig/sx/XmlOutputEventHandler.cxx	2005-08-26 22:08:19.000000000 +0200
++++ OpenSP-1.5.2/sx/XmlOutputEventHandler.cxx	2025-12-06 13:36:00.850570700 +0100
+@@ -36,6 +36,10 @@
+ #include <sys/types.h>
+ #include <errno.h>
+ 
++#if IS_MINGW == 1
++#define realpath(N,R) _fullpath((R),(N),_MAX_PATH)
++#endif
++
+ 
+ #ifdef SP_NAMESPACE
+ namespace SP_NAMESPACE {
+@@ -1469,7 +1473,7 @@
+     *pp = '/';
+   }
+ 
+-#ifndef _MSC_VER
++#if (IS_MINGW == 0)
+   struct stat statbuf;
+   pp = strrchr(path, '/');
+ 
+@@ -1484,7 +1488,7 @@
+ 
+   ret = mkdir(path, statbuf.st_mode);
+ #else
+-  ret=_mkdir(path);
++  ret=mkdir(path);
+ #endif
+   if (ret == -1) {
+     if (errno == EEXIST) {
